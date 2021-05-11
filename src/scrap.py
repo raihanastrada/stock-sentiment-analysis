@@ -9,7 +9,7 @@ main_url = 'https://id.investing.com/equities/indonesia'
 # Regex pattern to extract Stock Name
 stock_name_pattern = r'>[\w\s(&amp;)]*</a>'
 # Regex pattern to extract Stock URL
-stock_link_pattern = r'href="[\w\-\/]*'
+stock_link_pattern = r'href="[\w\-\/]*\"'
 # Regex pattern to extract news date
 date_pattern = r'(\d{2})[/-](\d{2})[/-](\d{4})'
 # Regex pattern to extract news headline
@@ -41,10 +41,9 @@ def get_stocks():
                 link = link.group(0)
 
                 # Clean the conntent
-                name = re.sub('>','',name)
-                name = re.sub('</a','',name)
-                name = re.sub('&amp;', '&', name)
-                link = re.sub('href="','',link)
+                name = re.sub(r'</a>|>','',name)
+                name = re.sub(r'&amp;', '&', name)
+                link = re.sub(r'href=|\"','',link)
 
                 # Only add if stock is a part of LQ45
                 if (name in lq45):
@@ -80,10 +79,9 @@ def get_news(stocks):
                     date = date.group(0)
                     
                     # Clean the 'headline'
-                    headline = re.sub('title=','',headline)
-                    headline = re.sub('&amp;', '&', headline)
-                    headline = re.sub('"','',headline)
-                    
+                    headline = re.sub(r'title=|\"','',headline)
+                    headline = re.sub(r'&amp;', '&', headline)
+
                     # Check if is date has a timespan of one week before today's date
                     # If 'True' then add to news_list; Else go to next stock
                     if (is_one_week_before(date)):
@@ -103,9 +101,3 @@ def is_one_week_before(x):
     d = datetime.datetime.strptime(x, "%d/%m/%Y")
     now = datetime.datetime.now()
     return (now - d).days < 7
-
-# if __name__ == "__main__":
-#     stocks = get_stocks()
-#     print(stocks)
-#     news = get_news(stocks)
-#     print(news)

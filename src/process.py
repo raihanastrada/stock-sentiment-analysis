@@ -11,13 +11,18 @@ def translate(news_list):
     F.S : IF could acces the translation API, headline is translated
           ELSE headline is not translated
     '''
+    f = open('output/process.txt', 'w')
+    f.write('['+'\n')
     for news in news_list:
         try:
             blob = TextBlob(news[1])
             news[1] = blob.translate(to="en")
+            f.write(str(news)+'\n')
         except:
             print("",end="")
             # DO NOTHING
+    f.write(']'+'\n')
+    f.close()
 
 def sentiment_analysis(stock_news):
     '''
@@ -55,14 +60,3 @@ def visualize_data(df):
     
     plt.grid()
     plt.show()
-
-def test():
-    vader = SentimentIntensityAnalyzer()
-    headline = "Harga Emas Antam Naik Lagi Jadi Rp937.000/Gram"
-    blob = TextBlob(headline)
-    headline = blob.translate(to="en")
-    print(headline)
-    print(vader.polarity_scores(headline))
-
-if __name__ == "__main__":
-    test()
